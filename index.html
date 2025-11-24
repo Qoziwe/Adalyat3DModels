@@ -17,41 +17,20 @@
     <script src="https://raw.githack.com/fcor/arjs-gestures/master/dist/gestures.js"></script>
 
     <style>
-      /* 1. Жестко задаем размеры страницы */
-      html,
       body {
-        height: 100%;
-        width: 100%;
         margin: 0;
-        padding: 0;
         overflow: hidden;
         background-color: black;
       }
-
-      /* 2. АГРЕССИВНОЕ РАСТЯГИВАНИЕ ВИДЕО */
-      /* Используем vw и vh - это проценты от ширины/высоты экрана */
       #arjs-video {
-        width: 100vw !important;
-        height: 100vh !important;
-        position: absolute !important;
-        top: 0;
-        left: 0;
-        z-index: -2; /* На самый задний план */
-        object-fit: cover !important;
-        transform: none !important; /* Отключаем трансформации AR.js */
-      }
-
-      /* 3. Растягиваем слой с 3D моделями (canvas) */
-      canvas.a-canvas {
-        width: 100vw !important;
-        height: 100vh !important;
+        width: 100% !important;
+        height: 100% !important;
         position: absolute !important;
         top: 0;
         left: 0;
         z-index: -1;
+        object-fit: cover !important;
       }
-
-      /* Загрузчик */
       .arjs-loader {
         height: 100%;
         width: 100%;
