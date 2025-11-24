@@ -4,6 +4,8 @@
     <title>AR Solar System</title>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- ВАЖНО: Запрет масштабирования интерфейса -->
     <meta
       name="viewport"
       content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
@@ -15,20 +17,41 @@
     <script src="https://raw.githack.com/fcor/arjs-gestures/master/dist/gestures.js"></script>
 
     <style>
+      /* 1. Жестко задаем размеры страницы */
+      html,
       body {
+        height: 100%;
+        width: 100%;
         margin: 0;
+        padding: 0;
         overflow: hidden;
         background-color: black;
       }
+
+      /* 2. АГРЕССИВНОЕ РАСТЯГИВАНИЕ ВИДЕО */
+      /* Используем vw и vh - это проценты от ширины/высоты экрана */
       #arjs-video {
-        width: 100% !important;
-        height: 100% !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        position: absolute !important;
+        top: 0;
+        left: 0;
+        z-index: -2; /* На самый задний план */
+        object-fit: cover !important;
+        transform: none !important; /* Отключаем трансформации AR.js */
+      }
+
+      /* 3. Растягиваем слой с 3D моделями (canvas) */
+      canvas.a-canvas {
+        width: 100vw !important;
+        height: 100vh !important;
         position: absolute !important;
         top: 0;
         left: 0;
         z-index: -1;
-        object-fit: cover !important;
       }
+
+      /* Загрузчик */
       .arjs-loader {
         height: 100%;
         width: 100%;
@@ -52,9 +75,10 @@
 
   <body>
     <div class="arjs-loader">
-      <div>Loading...<br />(Earth fixed!)</div>
+      <div>Loading AR...<br />(Wait ~20 sec)</div>
     </div>
 
+    <!-- Добавили id="scene" и embedded -->
     <a-scene
       embedded
       arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono; matrixCodeType: 3x3;"
@@ -73,24 +97,21 @@
         console.log("NFT loaded");
       });
 
-      // === ИНДИВИДУАЛЬНЫЕ РАЗМЕРЫ ===
-      // Мы сильно уменьшаем гигантов и сильно увеличиваем Землю
-
+      // === НАСТРОЙКИ (Сохранены с прошлого раза) ===
       const planets = [
-        // Солнце: Было 30 -> Стало 6 (Уменьшили в 5 раз)
+        // Солнце (s: 6)
         { file: "sun", s: 6, x: 150, y: 100, z: 10 },
 
-        // Меркурий: Было 8 -> Стало 3 (Уменьшили)
+        // Меркурий (s: 3)
         { file: "mercury", s: 3, x: 150, y: 100, z: 10 },
 
-        // Венера: Было 10 -> Стало 3 (Уменьшили)
+        // Венера (s: 3)
         { file: "venus", s: 3, x: 150, y: 100, z: 10 },
 
-        // === ЗЕМЛЯ ===
-        // Было 10 -> Стало 40 !!! (Увеличили в 4 раза, так как модель сама по себе мелкая)
+        // ЗЕМЛЯ (s: 40 - большая, потому что модель мелкая)
         { file: "earth", s: 40, x: 150, y: 100, z: 10 },
 
-        // Марс: Было 9 -> Стало 3 (Уменьшили)
+        // Марс (s: 3)
         { file: "mars", s: 3, x: 150, y: 100, z: 10 },
       ];
 
@@ -111,13 +132,9 @@
         const model = document.createElement("a-entity");
         model.setAttribute("gltf-model", `./MODELS/${p.file}.glb`);
 
-        // Применяем масштаб
         model.setAttribute("scale", `${p.s} ${p.s} ${p.s}`);
-
-        // Позиция
         model.setAttribute("position", `${p.x} ${p.y} ${p.z}`);
 
-        // Включаем вращение пальцами
         model.setAttribute("class", "clickable");
         model.setAttribute("gesture-handler", "minScale: 0.25; maxScale: 10");
         model.setAttribute("rotation", "0 0 0");
