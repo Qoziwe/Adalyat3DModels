@@ -4,8 +4,6 @@
     <title>AR Solar System</title>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
-    <!-- ВАЖНО: Запрет масштабирования интерфейса -->
     <meta
       name="viewport"
       content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
@@ -17,24 +15,19 @@
     <script src="https://raw.githack.com/fcor/arjs-gestures/master/dist/gestures.js"></script>
 
     <style>
+      /* === СТАНДАРТНЫЕ СТИЛИ === */
+      /* Не используем ничего лишнего, только база */
       body {
         margin: 0;
         overflow: hidden;
-        background-color: black;
+        font-family: sans-serif;
       }
-      #arjs-video {
-        width: 100% !important;
-        height: 100% !important;
-        position: absolute !important;
-        top: 0;
-        left: 0;
-        z-index: -1;
-        object-fit: cover !important;
-      }
+
+      /* Загрузчик - фиксируем на весь экран */
       .arjs-loader {
-        height: 100%;
-        width: 100%;
-        position: absolute;
+        height: 100vh;
+        width: 100vw;
+        position: fixed; /* Используем fixed, чтобы он точно был поверх всего */
         top: 0;
         left: 0;
         background-color: rgba(0, 0, 0, 0.8);
@@ -43,21 +36,22 @@
         justify-content: center;
         align-items: center;
       }
+
       .arjs-loader div {
         text-align: center;
         font-size: 1.25em;
         color: white;
-        font-family: sans-serif;
       }
     </style>
   </head>
 
   <body>
+    <!-- Загрузчик -->
     <div class="arjs-loader">
-      <div>Loading AR...<br />(Wait ~20 sec)</div>
+      <div>Loading AR...<br />(Please wait)</div>
     </div>
 
-    <!-- Добавили id="scene" и embedded -->
+    <!-- Сцена -->
     <a-scene
       embedded
       arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono; matrixCodeType: 3x3;"
@@ -72,25 +66,24 @@
     <script>
       const githubUrl = "https://qoziwe.github.io/Adalyat3DModels";
 
+      // === СКРИПТ ДЛЯ ИСПРАВЛЕНИЯ РАЗМЕРА КАМЕРЫ ===
+      // Этот код сработает, когда страница загрузится, и поправит размер видео
+      window.onload = function () {
+        setTimeout(() => {
+          window.dispatchEvent(new Event("resize"));
+        }, 1000); // Ждем 1 секунду и обновляем экран
+      };
+
       window.addEventListener("arjs-nft-loaded", function (ev) {
         console.log("NFT loaded");
       });
 
-      // === НАСТРОЙКИ (Сохранены с прошлого раза) ===
+      // === ВАШИ ПЛАНЕТЫ (Настройки сохранены) ===
       const planets = [
-        // Солнце (s: 6)
         { file: "sun", s: 6, x: 150, y: 100, z: 10 },
-
-        // Меркурий (s: 3)
         { file: "mercury", s: 3, x: 150, y: 100, z: 10 },
-
-        // Венера (s: 3)
         { file: "venus", s: 3, x: 150, y: 100, z: 10 },
-
-        // ЗЕМЛЯ (s: 40 - большая, потому что модель мелкая)
-        { file: "earth", s: 40, x: 150, y: 100, z: 10 },
-
-        // Марс (s: 3)
+        { file: "earth", s: 40, x: 150, y: 100, z: 10 }, // Земля большая
         { file: "mars", s: 3, x: 150, y: 100, z: 10 },
       ];
 
@@ -110,10 +103,8 @@
 
         const model = document.createElement("a-entity");
         model.setAttribute("gltf-model", `./MODELS/${p.file}.glb`);
-
         model.setAttribute("scale", `${p.s} ${p.s} ${p.s}`);
         model.setAttribute("position", `${p.x} ${p.y} ${p.z}`);
-
         model.setAttribute("class", "clickable");
         model.setAttribute("gesture-handler", "minScale: 0.25; maxScale: 10");
         model.setAttribute("rotation", "0 0 0");
